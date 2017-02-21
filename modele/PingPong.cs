@@ -10,6 +10,12 @@ namespace Projet.modele
     {
         private readonly string _type = "PING/PONG";
 
+        public PingPong(string addr_source, long timestamp)
+        {
+            this.addr_source = addr_source;
+            this.timestamp = timestamp;
+        }
+
         public string type
         {
             get
@@ -17,5 +23,7 @@ namespace Projet.modele
                 return _type;
             }
         }
+        public string addr_source { get; set; }
+        public long timestamp { get; set; }
     }
 }

@@ -12,3 +12,6 @@ C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\Pro
 C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\Projet.csproj.GenerateResource.Cache
 C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\Projet.exe
 C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\Projet.pdb
+C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\PrivateChatWindow.g.cs
+C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\PrivateChatWindow.baml

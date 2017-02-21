@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Projet.modele;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,42 @@ namespace Projet
         public MainWindow()
         {
             InitializeComponent();
+
+            // lancer le listener
+            // remplir liste de noeuds voisins
+            List<Chatroom> chatrooms = new List<Chatroom>();
+            Chatroom c1 = new Chatroom("c1");
+            Chatroom c2 = new Chatroom("c2");
+            Chatroom c3 = new Chatroom("c3");
+            chatrooms.Add(c1);
+            chatrooms.Add(c2);
+            chatrooms.Add(c3);
+
+            listBoxChatrooms.ItemsSource = chatrooms;
+
+            List<string> participants = new List<string>();
+            participants.Add("thais");
+            participants.Add("dragos");
+
+            listBoxParticipants.ItemsSource = participants;
+        }
+
+
+
+        private void buttonSendMessage_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void listBoxParticipants_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ListBox list = (ListBox)sender;
+            
+            if (list.Items.Contains(e.Source))
+            {
+                PrivateChatWindow privateChat = new PrivateChatWindow((string)listBoxParticipants.SelectedItem);
+                privateChat.Show();
+            }
         }
     }
 }

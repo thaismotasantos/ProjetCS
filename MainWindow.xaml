@@ -1,43 +1,50 @@
-﻿<Window x:Class="Projet.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Projet"
+        xmlns:modele="clr-namespace:Projet.modele" x:Class="Projet.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid x:Name="gridMain">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"></ColumnDefinition>
-            <ColumnDefinition Width="6*"></ColumnDefinition>
-            <ColumnDefinition Width="2*"></ColumnDefinition>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <ListBox x:Name="listBoxChatrooms" Grid.Column="0"/>
+        <ListBox x:Name="listBoxChatrooms" Grid.Column="0" ItemsSource="{Binding chatrooms}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding name}"></TextBlock>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <Grid x:Name="gridChat" Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="9*"></RowDefinition>
-                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="9*"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
             <ListView x:Name="listViewMessages" Grid.Row="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,0.333,0" ScrollViewer.CanContentScroll="True"/>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="8*"></ColumnDefinition>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                    <ColumnDefinition Width="8*"/>
+                    <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBox Grid.Row="0" Grid.Column="0" x:Name="textBoxChat" TextWrapping="Wrap" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto"/>
-                <Button Grid.Row="0" Grid.Column="1" x:Name="buttonSendMessage" Content="Send"/>
+                <Button Grid.Row="0" Grid.Column="1" x:Name="buttonSendMessage" Content="Send" Click="buttonSendMessage_Click"/>
             </Grid>
         </Grid>
-        <ListBox x:Name="listBoxParticipants" Grid.Column="2"/>
-        
-        
-        
+        <ListBox x:Name="listBoxParticipants" Grid.Column="2" MouseDoubleClick="listBoxParticipants_MouseDoubleClick"/>
+
+
+
     </Grid>
     <!--<Grid HorizontalAlignment="Right" Margin="0,0,-0.333,-0.333" Width="519">
         <DockPanel x:Name="mainPanel" Margin="0" LastChildFill="False">

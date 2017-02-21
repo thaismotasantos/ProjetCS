@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace Projet.modele
 {
-    class Chatroom
+    public class Chatroom
     {
+        public string name { get; set; }
+        public List<Message> messages { get; set; }
+
+        public Chatroom(string name)
+        {
+            this.name = name;
+        }
     }
 }

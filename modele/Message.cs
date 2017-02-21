@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Projet.modele
 {
-    class Message
+    public class Message
     {
         private readonly string _type = "MESSAGE";
 

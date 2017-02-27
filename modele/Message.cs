@@ -1,37 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Projet.modele
 {
-    public class Message
+    [DataContract]
+    public class Message : CommunicationType
     {
-        private readonly string _type = "MESSAGE";
 
-        public Message(string nickname, string msg, string destinataire, string hash, string rootedby)
+        public Message(string nickname, string msg, string destinataire, string rootedby): base("MESSAGE")
         {
             this.nickname = nickname;
-            this.nickname = msg;
+            this.msg = msg;
             this.timestamp = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            this.nickname = destinataire;
-            this.nickname = hash;
-            this.nickname = rootedby;
+            this.destinataire = destinataire;
+            this.rootedby = rootedby;
         }
 
-        public string type
-        {
-            get
-            {
-                return _type;
-            }
-        }
+        [DataMember]
         public string nickname { get; set; } // ”LeB0G0sDu06”
+        [DataMember]
         public string msg { get; set; }
+        [DataMember]
         public long timestamp { get; set; } // ”131231231231”
+        [DataMember]
         public string destinataire { get; set; } // vide si chan principal sinon nickname de la personne
+        [DataMember]
         public string hash
         {
             get

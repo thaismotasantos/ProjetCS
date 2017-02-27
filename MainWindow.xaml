@@ -8,9 +8,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Window.Resources>
-        <Style x:Key="itemstyle" TargetType="{x:Type ListViewItem}">
-            <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
-        </Style>
     </Window.Resources>
     <Grid x:Name="gridMain">
         <Grid.ColumnDefinitions>
@@ -46,9 +43,13 @@
                 <Button Grid.Row="0" Grid.Column="1" x:Name="buttonSendMessage" Content="Send" Click="buttonSendMessage_Click"/>
             </Grid>
         </Grid>
-        <ListView x:Name="listBoxParticipants" Grid.Column="2" ItemContainerStyle="{StaticResource itemstyle}">
-            <ListViewItem ></ListViewItem>
-        </ListView>
+        <ListBox x:Name="listBoxParticipants" Grid.Column="2" MouseDoubleClick="listBoxParticipants_MouseDoubleClick">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}"></TextBlock>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
 
 

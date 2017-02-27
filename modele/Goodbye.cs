@@ -1,27 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Projet.modele
 {
-    class Goodbye
+    [DataContract]
+    public class Goodbye : CommunicationType
     {
-        private readonly string _type = "GOODBYE";
-
-        public Goodbye(string addr)
+        public Goodbye(string addr): base("GOODBYE")
         {
             this.addr = addr;
         }
-
-        public string type
-        {
-            get
-            {
-                return _type;
-            }
-        }
+        
+        [DataMember]
         public string addr { get; set; }
     }
 }

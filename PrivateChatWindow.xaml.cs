@@ -14,14 +14,18 @@ using System.Windows.Shapes;
 
 namespace Projet
 {
-    /// <summary>
-    /// Logique d'interaction pour PrivateChatWindow.xaml
-    /// </summary>
+
     public partial class PrivateChatWindow : Window
     {
+        public string PrivateChatTitle { get; private set; }
+
         public PrivateChatWindow(string username)
         {
             InitializeComponent();
+            DataContext = this;
+            PrivateChatTitle = username;
         }
+
+        
     }
 }

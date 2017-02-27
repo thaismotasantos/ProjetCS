@@ -19,7 +19,7 @@ namespace Projet
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : System.Windows.Window
     {
         public MainWindow()
         {
@@ -53,20 +53,33 @@ namespace Projet
 
         private void listBoxParticipants_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ListBox list = (ListBox)sender;
-            
-            if (list.Items.Contains(list.SelectedItem))
+            object item = null;
+            item = GetElementFromPoint(listBoxParticipants, e.GetPosition(listBoxParticipants));
+            if (item != null)
             {
-                PrivateChatWindow privateChat = new PrivateChatWindow((string)listBoxParticipants.SelectedItem);
-                privateChat.Show();
+                PrivateChatWindow pcw = new PrivateChatWindow(item.ToString());
+                pcw.Show();
             }
         }
 
-        private void listBoxParticipants_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private object GetElementFromPoint(ListBox listBox, Point point)
         {
+            UIElement element = (UIElement)listBox.InputHitTest(point);
+            while (true)
             {
-                MessageBox.Show("coucou");
+                if (element == listBox)
+                {
+                    return null;
+                }
+                object item = listBox.ItemContainerGenerator.ItemFromContainer(element);
+                bool itemFound = !(item.Equals(DependencyProperty.UnsetValue));
+                if (itemFound)
+                {
+                    return item;
+                }
+                element = (UIElement)VisualTreeHelper.GetParent(element);
             }
         }
+        
     }
 }

@@ -15,3 +15,19 @@ C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\Pro
 C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\GeneratedInternalTypeHelper.g.cs
 C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\PrivateChatWindow.g.cs
 C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\PrivateChatWindow.baml
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\bin\Debug\Projet.exe.config
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\Projet.exe
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\Projet.pdb
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\Projet.csprojResolveAssemblyReference.cache
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\MainWindow.g.cs
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\PrivateChatWindow.g.cs
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\App.g.cs
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\Projet_MarkupCompile.cache
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\Projet_MarkupCompile.lref
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\bin\Debug\Projet.exe
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\bin\Debug\Projet.pdb
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\MainWindow.baml
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\PrivateChatWindow.baml
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\Projet.g.resources
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\Projet.Properties.Resources.resources
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\Projet.csproj.GenerateResource.Cache

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Projet.modele
 {
-    class Peer
+    public class Peer
     {
         public string addr { get; set; }
         public string port { get; set; }

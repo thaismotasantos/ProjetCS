@@ -1,29 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Projet.modele
 {
-    class PingPong
+    [DataContract]
+    public class PingPong : CommunicationType
     {
-        private readonly string _type = "PING/PONG";
-
-        public PingPong(string addr_source, long timestamp)
+        public PingPong(string addr_source, long timestamp): base("PING/PONG")
         {
             this.addr_source = addr_source;
             this.timestamp = timestamp;
         }
 
-        public string type
-        {
-            get
-            {
-                return _type;
-            }
-        }
+        [DataMember]
         public string addr_source { get; set; }
+        [DataMember]
         public long timestamp { get; set; }
     }
 }

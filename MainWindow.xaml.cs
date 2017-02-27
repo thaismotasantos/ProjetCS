@@ -55,10 +55,17 @@ namespace Projet
         {
             ListBox list = (ListBox)sender;
             
-            if (list.Items.Contains(e.Source))
+            if (list.Items.Contains(list.SelectedItem))
             {
                 PrivateChatWindow privateChat = new PrivateChatWindow((string)listBoxParticipants.SelectedItem);
                 privateChat.Show();
+            }
+        }
+
+        private void listBoxParticipants_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            {
+                MessageBox.Show("coucou");
             }
         }
     }

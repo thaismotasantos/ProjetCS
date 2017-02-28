@@ -30,7 +30,7 @@ namespace Projet
             adressePremierDestinataire = "";
             portePremierDestinataire = 2323;
 
-            //noeuds.Add(new Peer(adressePremierDestinataire, portePremierDestinataire)); // 1 pair en dur
+            noeuds.Add(new Peer(adressePremierDestinataire, portePremierDestinataire)); // 1 pair en dur
 
             ThreadStart threadDelegate = new ThreadStart(listen);
             Thread thread = new Thread(threadDelegate);
@@ -56,10 +56,10 @@ namespace Projet
 
         private void incomingMessage(string msg)
         {
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Message));
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(CommunicationType));
             MemoryStream stream = new MemoryStream();
             stream.Position = 0;
-            Message mc = (Message)ser.ReadObject(stream);
+            CommunicationType mc = (CommunicationType)ser.ReadObject(stream);
 
             // verifier type message
             /*switch(mc.type)
@@ -67,9 +67,10 @@ namespace Projet
                 case CommunicationType.HELLO:
                     // si hello, regarder si source du message est dans la liste de helloReceivers
                     // si oui, ne pas répondre et récupere sa liste de noeuds et ajouter à la sienne
-                    if (helloReceivers.Where(p => p.addr_source == ((Hello)mc).addr_source).Length == 0)
+                    List<Peer> liste = helloReceivers.Where(p => (p.addr == ((Hello)mc).addr_source)).ToList();
+                    if (liste.Count == 0)
                     {
-                        List<Peer> listeNoeudsVoisins = ((Hello)mc).pairs);
+                        List<Peer> listeNoeudsVoisins = ((Hello)mc).pairs;
                         fillNeighbours(listeNoeudsVoisins);
                     }
 

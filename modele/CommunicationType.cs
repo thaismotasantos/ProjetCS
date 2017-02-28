@@ -14,5 +14,5 @@ namespace Projet.modele
         {
             this.type = type;
         }
-    }
+    }    
 }

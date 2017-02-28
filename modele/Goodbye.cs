@@ -10,7 +10,7 @@ namespace Projet.modele
     [DataContract]
     public class Goodbye : CommunicationType
     {
-        public Goodbye(string addr): base("GOODBYE")
+        public Goodbye(string addr): base(ECommunicationType.GOODBYE)
         {
             this.addr = addr;
         }

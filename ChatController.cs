@@ -62,9 +62,9 @@ namespace Projet
             CommunicationType mc = (CommunicationType)ser.ReadObject(stream);
 
             // verifier type message
-            /*switch(mc.type)
+            switch(mc.type)
             {
-                case CommunicationType.HELLO:
+                case ECommunicationType.HELLO:
                     // si hello, regarder si source du message est dans la liste de helloReceivers
                     // si oui, ne pas répondre et récupere sa liste de noeuds et ajouter à la sienne
                     List<Peer> liste = helloReceivers.Where(p => (p.addr == ((Hello)mc).addr_source)).ToList();
@@ -79,7 +79,7 @@ namespace Projet
                 default:
                     Console.WriteLine("Default case");
                     break;
-            }*/
+            }
         }
 
         private void startup()
@@ -87,14 +87,14 @@ namespace Projet
             // envoie hello et attend liste de noeuds voisins. si toujours moins que 4 renvoie un autre hello à un des nouveaux noeuds.
             // si toujours moins que 4 attendre 10 sec
 
-            /*Hello hello = new Hello(adresse, porte, noeuds);
+            Hello hello = new Hello(adresse, porte, noeuds);
 
             // convert into json
             foreach(Peer p in noeuds)
             {
                 sendMessage(serialize(hello), p.addr, p.port);
                 helloReceivers.Add(p);
-            }*/
+            }
         }
 
         private void sendMessage(string message, string adresse_destinataire, Int32 porte_destinataire)

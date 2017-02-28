@@ -12,7 +12,7 @@ namespace Projet.modele
     public class Message : CommunicationType
     {
 
-        public Message(string nickname, string msg, string destinataire, string rootedby): base("MESSAGE")
+        public Message(string nickname, string msg, string destinataire, string rootedby): base(ECommunicationType.MESSAGE)
         {
             this.nickname = nickname;
             this.msg = msg;

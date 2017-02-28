@@ -12,65 +12,56 @@
     <Grid x:Name="gridMain">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="6*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="8*"/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="9*"/>
+        </Grid.RowDefinitions>
 
-        <ListBox x:Name="listBoxChatrooms" Grid.Column="0" ItemsSource="{Binding chatrooms}">
+        <Button Grid.Column="0" Grid.Row="0" x:Name="buttonAddTopic" Content="Add new topic" Click="buttonAddTopic_Click" />
+        <ListBox x:Name="listBoxChatrooms" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding chatrooms}" SelectionChanged="listBoxChatrooms_SelectionChanged" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding name}"></TextBlock>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Grid x:Name="gridChat" Grid.Column="1">
+
+        <Grid x:Name="gridChat" Grid.Column="1" Grid.RowSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="6*"/>
+                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="9*"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="8.5*"/>
+                <RowDefinition Height="1.5*"/>
             </Grid.RowDefinitions>
 
-            <ListView x:Name="listViewMessages" Grid.Row="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,0.333,0" ScrollViewer.CanContentScroll="True"/>
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
+            <ListView x:Name="listViewMessages" Grid.Row="0" Grid.ColumnSpan="2" >
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <WrapPanel>
+                            <TextBlock Text="{Binding nickname}"></TextBlock>
+                            <TextBlock Text=" : "></TextBlock>
+                            <TextBlock Text="{Binding msg}"></TextBlock>
+                        </WrapPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <TextBox Grid.Row="1" Grid.Column="0" x:Name="textBoxChat" TextWrapping="Wrap" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto"/>
+            <Button Grid.Row="1" Grid.Column="1" x:Name="buttonSendMessage" Content="Send" Click="buttonSendMessage_Click"/>
 
-                <TextBox Grid.Row="0" Grid.Column="0" x:Name="textBoxChat" TextWrapping="Wrap" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto"/>
-                <Button Grid.Row="0" Grid.Column="1" x:Name="buttonSendMessage" Content="Send" Click="buttonSendMessage_Click"/>
-            </Grid>
+            <ListBox x:Name="listBoxParticipants" Grid.Column="2" Grid.RowSpan="2" MouseDoubleClick="listBoxParticipants_MouseDoubleClick">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}"></TextBlock>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Grid>
-        <ListBox x:Name="listBoxParticipants" Grid.Column="2" MouseDoubleClick="listBoxParticipants_MouseDoubleClick">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}"></TextBlock>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-
 
 
     </Grid>
-    <!--<Grid HorizontalAlignment="Right" Margin="0,0,-0.333,-0.333" Width="519">
-        <DockPanel x:Name="mainPanel" Margin="0" LastChildFill="False">
-            <ListBox x:Name="listBoxChatrooms" Height="320.666666666667" VerticalAlignment="Top" Width="100"/>
-            <ListBox x:Name="listBoxParticipants" Height="320.666666666667" Width="100" RenderTransformOrigin="3.932,0.47" HorizontalAlignment="Right" DockPanel.Dock="Right"/>
-            <Grid DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="8*"></ColumnDefinition>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBox Grid.Row="0" Grid.Column="0" x:Name="textBox" TextWrapping="Wrap" Text="TextBox" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto"/>
-                <Button Grid.Row="0" Grid.Column="1" x:Name="button" Content="Button"/>
-            </Grid>
-            <Grid Height="290.666666666667" VerticalAlignment="Top" Width="100"/>
-        </DockPanel>
-
-    </Grid>-->
 </Window>

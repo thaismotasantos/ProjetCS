@@ -14,3 +14,5 @@ C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\PrivateChatWindow.ba
 C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\Projet.g.resources
 C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\Projet.Properties.Resources.resources
 C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\Projet.csproj.GenerateResource.Cache
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\TopicNameForm.g.cs
+C:\Users\cojoc\DEV\VisualStudiosProjects\ProjetCS\obj\Debug\TopicNameForm.baml

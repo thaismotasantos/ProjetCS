@@ -1,6 +1,7 @@
 ﻿using Projet.modele;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,35 +17,62 @@ using System.Windows.Shapes;
 
 namespace Projet
 {
-    /// <summary>
-    /// Logique d'interaction pour MainWindow.xaml
-    /// </summary>
+
     public partial class MainWindow : System.Windows.Window
     {
+        ObservableCollection<Chatroom> chatrooms = new ObservableCollection<Chatroom>();
+        ObservableCollection<Message> messagesOfSelectedChatroom;
+        List<string> peers = new List<string>();
+
         public MainWindow()
         {
             InitializeComponent();
 
             // lancer le listener
             // remplir liste de noeuds voisins
-            List<Chatroom> chatrooms = new List<Chatroom>();
-            Chatroom c1 = new Chatroom("c1");
-            Chatroom c2 = new Chatroom("c2");
-            Chatroom c3 = new Chatroom("c3");
+
+            populateChatrooms();
+
+            listBoxChatrooms.ItemsSource = chatrooms;
+            listBoxChatrooms.SelectedItem = chatrooms[0];
+            messagesOfSelectedChatroom = chatrooms[0].messages;
+            listViewMessages.ItemsSource = messagesOfSelectedChatroom;
+
+            listBoxParticipants.ItemsSource = peers;
+        }
+
+        private void populateChatrooms()
+        {
+            Chatroom c1 = new Chatroom("Real world");
+            Chatroom c2 = new Chatroom("Hogwarts");
+            Chatroom c3 = new Chatroom("Middle Earth");
+
             chatrooms.Add(c1);
             chatrooms.Add(c2);
             chatrooms.Add(c3);
 
-            listBoxChatrooms.ItemsSource = chatrooms;
+            c1.messages.Add(new Message("thais", "Coucou tout le monde", "", ""));
+            c1.messages.Add(new Message("dragos", "Coucou toi", "", ""));
+            c1.messages.Add(new Message("aurore", "Hey", "", ""));
 
-            List<string> participants = new List<string>();
-            participants.Add("thais");
-            participants.Add("dragos");
+            c2.messages.Add(new Message("harry", "Expecto patronum", "", ""));
+            c2.messages.Add(new Message("ron", "Wingardium Leviosa", "", ""));
+            c2.messages.Add(new Message("hermione", "Alohomora", "", ""));
 
-            listBoxParticipants.ItemsSource = participants;
+            c3.messages.Add(new Message("frodo", "My precious", "", ""));
+            c3.messages.Add(new Message("sam", "No, Mister Frodo", "", ""));
+            c3.messages.Add(new Message("gandalf", "You shall not pass", "", ""));
+
+            peers.Add("thais");
+            peers.Add("dragos");
+            peers.Add("aurore");
+            peers.Add("harry");
+            peers.Add("ron");
+            peers.Add("hermione");
+            peers.Add("frodo");
+            peers.Add("sam");
+            peers.Add("gandalf");
         }
-
-
 
         private void buttonSendMessage_Click(object sender, RoutedEventArgs e)
         {
@@ -58,6 +86,7 @@ namespace Projet
             if (item != null)
             {
                 PrivateChatWindow pcw = new PrivateChatWindow(item.ToString());
+
                 pcw.Show();
             }
         }
@@ -80,6 +109,29 @@ namespace Projet
                 element = (UIElement)VisualTreeHelper.GetParent(element);
             }
         }
-        
+
+
+        private void listBoxChatrooms_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var item = ItemsControl.ContainerFromElement(listBoxChatrooms, e.OriginalSource as DependencyObject) as ListBoxItem;
+            if (item != null)
+            {
+                MessageBox.Show(item.ToString());
+            }
+        }
+
+        private void listBoxChatrooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Chatroom selectedChatroom = (Chatroom) listBoxChatrooms.SelectedItem;
+            listViewMessages.ItemsSource = selectedChatroom.messages;
+        }
+
+        private void buttonAddTopic_Click(object sender, RoutedEventArgs e)
+        {
+            TopicNameForm tnf = new TopicNameForm();
+            tnf.Show();
+        }
+
+
     }
 }

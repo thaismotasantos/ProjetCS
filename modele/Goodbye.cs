@@ -10,12 +10,15 @@ namespace Projet.modele
     [DataContract]
     public class Goodbye : CommunicationType
     {
-        public Goodbye(string addr): base(ECommunicationType.GOODBYE)
+        public Goodbye(string addr, string nickname): base(ECommunicationType.GOODBYE)
         {
             this.addr = addr;
+            this.nickname = nickname;
         }
         
         [DataMember]
         public string addr { get; set; }
+        [DataMember]
+        public string nickname { get; set; }
     }
 }

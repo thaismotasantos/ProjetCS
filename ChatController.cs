@@ -4,10 +4,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Json;
 using System.Linq;
+using System.Diagnostics;
+using System.Runtime.Serialization;
+using System.Threading;
+using System.Timers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Projet
 {
@@ -22,22 +27,24 @@ namespace Projet
         private string adressePremierDestinataire;
         private Int32 portePremierDestinataire;
 
-        private List<Peer> helloReceivers; // liste de hello déjà reçus
+        private Dictionary<Peer, DateTime> helloSenders; // liste de hello déjà reçus
         private List<string> sentAndReceivedMessages; // liste de hash des messages
 
         private List<string> participants;
 
+        private System.Timers.Timer cleanHelloTimer;
+
         public ChatController()
         {
-            adresse = "192.168.56.1"; // 10.154.127.235
+            adresse = "10.154.127.235";
             porte = 2323;
-            nickname = "";
-            adressePremierDestinataire = "";
+            nickname = "thais";
+            adressePremierDestinataire = "10.154.127.235";
             portePremierDestinataire = 2323;
 
             noeuds = new List<Peer>();
             chatrooms = new List<Chatroom>();
-            helloReceivers = new List<Peer>();
+            helloSenders = new Dictionary<Peer, DateTime>();
             sentAndReceivedMessages = new List<string>();
             participants = new List<string>();
 
@@ -48,7 +55,31 @@ namespace Projet
             Thread thread = new Thread(threadDelegate);
             thread.Start();
 
+            /*ThreadStart threadDelegateCleanHello = new ThreadStart(cleanHelloSendersLits);
+            Thread threadCleanHello = new Thread(threadDelegateCleanHello);
+            threadCleanHello.Start();*/
+            InitTimer();
+
             startup();
+        }
+
+        private void InitTimer()
+        {
+            cleanHelloTimer = new System.Timers.Timer();
+            cleanHelloTimer.Elapsed += new ElapsedEventHandler(cleanHelloTimer_Tick);
+            cleanHelloTimer.Interval = 10000;
+            cleanHelloTimer.Enabled = true;
+
+            //cleanHelloTimer.Start();
+            /*var aTimer = new System.Timers.Timer(1000);
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            aTimer.Interval = 1000;
+            aTimer.Enabled = true;*/
+        }
+
+        private void cleanHelloTimer_Tick(object sender, ElapsedEventArgs e)
+        {
+            helloSenders = helloSenders.Where(s => ((DateTime.Now - s.Value).TotalSeconds < 10)).ToDictionary(s => s.Key, s => s.Value);
         }
 
         private void listen()
@@ -57,59 +88,100 @@ namespace Projet
 
             // Initialisation
             UdpClient listener = new UdpClient(porte);
-            IPEndPoint ep = new IPEndPoint(IPAddress.Any, porte);
 
             while (true)
             {
+                IPEndPoint ep = new IPEndPoint(IPAddress.Any, porte);
                 // Reception
+                Debug.WriteLine("#############################");
+                Debug.WriteLine("EP : " + ep);
                 byte[] bytes = listener.Receive(ref ep);
 
                 // Conversion
                 String msg = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+                Debug.WriteLine("#############################");
+                Debug.WriteLine("MGS : " + msg);
 
                 incomingMessage(msg);
             }
         }
 
+        public static MemoryStream GenerateStreamFromString(string s)
+        {
+            MemoryStream stream = new MemoryStream();
+            StreamWriter writer = new StreamWriter(stream);
+            writer.Write(s);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
+        }
+
         private void incomingMessage(string msg)
         {
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(CommunicationType));
-            MemoryStream stream = new MemoryStream();
-            stream.Position = 0;
-            CommunicationType mc = (CommunicationType)ser.ReadObject(stream);
+            
 
-            // verifier type message
-            switch(mc.type)
+            var data = (JObject)JsonConvert.DeserializeObject(msg);
+            Console.WriteLine(data["type"]);
+            string type = data["type"].Value<string>();
+
+            MemoryStream stream = GenerateStreamFromString(msg);
+            stream.Position = 0;
+
+            // vérifier type message
+            if (type.Contains(ECommunicationType.HELLO))
             {
-                case ECommunicationType.HELLO:
-                    // si hello, regarder si source du message est dans la liste de helloReceivers
-                    // si oui, ne pas répondre et récuperer sa liste de noeuds et ajouter à la sienne
-                    List<Peer> liste = helloReceivers.Where(p => (p.addr == ((Hello)mc).addr_source)).ToList();
-                    if (liste.Count > 0)
+                Hello receivedHello = new Hello();
+                if (type == ECommunicationType.HELLO_A)
+                {
+                    DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Hello_A));
+                    receivedHello = (Hello_A)ser.ReadObject(stream);
+                }
+                else if (type == ECommunicationType.HELLO_R)
+                {
+                    DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Hello_R));
+                    receivedHello = (Hello_R)ser.ReadObject(stream);
+                }
+
+                // si hello qui quelqu'un m'a envoyé, vérifier qu'il n'a pas été déjà reçu à moins de 10 sec
+                // si non, répondre le hello reçu avec la liste noeuds
+                List<Peer> liste = helloSenders.Where(p => (p.Key.addr == receivedHello.addr_source)).Select(p => p.Key).ToList();
+                if (liste.Count == 0)
+                {
+                    List<Peer> listeNoeudsVoisins = receivedHello.pairs;
+                    if (receivedHello.GetType() == typeof(Hello_A))
                     {
-                        List<Peer> listeNoeudsVoisins = ((Hello)mc).pairs;
-                        fillNeighbours(listeNoeudsVoisins);
-                    } // sinon, répondre le hello reçu avec la liste noeuds
-                    else
-                    {
+                        helloSenders.Add(new Peer(receivedHello.addr_source, receivedHello.port_source), DateTime.Now);
+
+                        Hello_R hello_r = new Hello_R(adresse, porte, noeuds);
+                        Peer peer_dest = new Peer(receivedHello.addr_source, receivedHello.port_source);
+                        sendHello(hello_r, peer_dest);
+
                         // A TRAITER : Sauf si un noeuds fait un HELLO avec une liste de paire vide (isolé) auquel cas on le rajoute automatiquement
                         // si source contient que moi dans sa liste de noeuds, l'ajouter à ma liste de noeuds (même que ça dépasse 4)
-                        Hello hello = new Hello(adresse, porte, noeuds);
-                        Peer peer_dest = new Peer(((Hello)mc).addr_source, ((Hello)mc).port_source);
-                        sendHello(hello, peer_dest);
+                        // si aucun noeud voisin ou 1 seul et moi même
+                        if (listeNoeudsVoisins.Count == 0 
+                            || (listeNoeudsVoisins.Count == 1 && listeNoeudsVoisins.Where(p => (p.addr == adresse)).ToList().Count > 0))
+                        {
+                            noeuds.Add(peer_dest);
+                        }
                     }
-                    break;
-                case ECommunicationType.MESSAGE:
-                    // vérifier si message pas encore reçu
-                    if(sentAndReceivedMessages.Where(m => m == ((Message)mc).hash).ToList().Count == 0)
-                    {
-                        sendMessage((Message)mc);
-                        sentAndReceivedMessages.Add(((Message)mc).hash);
-                    }
-                    break;
-                default:
-                    Console.WriteLine("Default case");
-                    break;
+
+                    // récuperer sa liste de noeuds et ajouter à la sienne
+                    fillNeighbours(listeNoeudsVoisins);
+                }
+            }
+            else if (msg.Contains(ECommunicationType.MESSAGE))
+            {
+                // vérifier si message pas encore reçu
+                /*if(sentAndReceivedMessages.Where(m => m == ((Message)mc).hash).ToList().Count == 0)
+                {
+                    sendMessage((Message)mc);
+                    sentAndReceivedMessages.Add(((Message)mc).hash);
+                }*/
+            }
+            else
+            {
+                Console.WriteLine("Default case");
             }
         }
 
@@ -197,21 +269,20 @@ namespace Projet
             // envoie hello et attend liste de noeuds voisins. si toujours moins que 4 renvoie un autre hello à un des nouveaux noeuds.
             // si toujours moins que 4 attendre 10 sec
 
-            Hello hello = new Hello(adresse, porte, noeuds);
+            Hello_A hello = new Hello_A(adresse, porte, noeuds);
 
             // convert into json
             foreach(Peer p in noeuds)
             {
                 sendHello(hello, p);
                 //sendMessage(serialize(hello), p.addr, p.port);
-                //helloReceivers.Add(p);
+                //helloSenders.Add(p);
             }
         }
 
         private void sendHello(Hello hello, Peer peer)
         {
             sendCommunication(serialize(hello), peer.addr, peer.port);
-            helloReceivers.Add(peer);
         }
 
         private void sendCommunication(string message, string adresse_destinataire, Int32 porte_destinataire)
@@ -230,7 +301,37 @@ namespace Projet
 
         private string serialize(CommunicationType comm)
         {
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(CommunicationType));
+            DataContractJsonSerializer ser;
+
+            if(comm.GetType() == typeof(Hello))
+            {
+                ser = new DataContractJsonSerializer(typeof(Hello));
+            }
+            else if (comm.GetType() == typeof(Hello_A))
+            {
+                ser = new DataContractJsonSerializer(typeof(Hello_A));
+            }
+            else if (comm.GetType() == typeof(Hello_R))
+            {
+                ser = new DataContractJsonSerializer(typeof(Hello_R));
+            }
+            else if(comm.GetType() == typeof(Message))
+            {
+                ser = new DataContractJsonSerializer(typeof(Message));
+            }
+            else if (comm.GetType() == typeof(PingPong))
+            {
+                ser = new DataContractJsonSerializer(typeof(PingPong));
+            }
+            else if (comm.GetType() == typeof(Goodbye))
+            {
+                ser = new DataContractJsonSerializer(typeof(Goodbye));
+            }
+            else
+            {
+                ser = new DataContractJsonSerializer(typeof(Goodbye));
+            }
+
             MemoryStream stream = new MemoryStream();
             ser.WriteObject(stream, comm);
             stream.Position = 0;
@@ -260,7 +361,7 @@ namespace Projet
             // si quantité toujours plus petite que 4 envoyer un nouveau 
             if(noeuds.Count < 4)
             {
-                List<Peer> listeNoeudsPasEncoreEnvoyes = noeuds.Except(helloReceivers).ToList();
+                List<Peer> listeNoeudsPasEncoreEnvoyes = noeuds.Except(helloSenders.Select(p => p.Key)).ToList();
                 if (listeNoeudsPasEncoreEnvoyes.Count > 0)
                 {
                     startup();
@@ -268,7 +369,7 @@ namespace Projet
                 else
                 {
                     // attendre 10 sec et envoyer hello
-                    // reinitialiser liste helloReceivers
+                    // reinitialiser liste helloSenders
                 }
             }
         }

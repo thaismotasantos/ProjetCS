@@ -39,6 +39,7 @@ namespace Projet
             listViewMessages.ItemsSource = messagesOfSelectedChatroom;
 
             listBoxParticipants.ItemsSource = peers;
+            ChatController cc = new ChatController();
         }
 
         private void populateChatrooms()

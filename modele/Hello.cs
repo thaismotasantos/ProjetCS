@@ -7,10 +7,15 @@ using System.Threading.Tasks;
 
 namespace Projet.modele
 {
-    [DataContract]
+    [DataContract(Name ="HELLO")]
     public class Hello : CommunicationType
     {
-        public Hello(string addr_source, Int32 port_source, List<Peer> pairs): base(ECommunicationType.HELLO)
+        public Hello()
+        {
+
+        }
+
+        public Hello(string addr_source, Int32 port_source, List<Peer> pairs, string type): base(type)
         {
             this.addr_source = addr_source;
             this.port_source = port_source;

@@ -20,18 +20,19 @@ namespace Projet
 
     public partial class MainWindow : System.Windows.Window
     {
+        public string nickname;
+        public string address;
         public ObservableCollection<Chatroom> chatrooms = new ObservableCollection<Chatroom>();
         public ObservableCollection<Message> messagesOfSelectedChatroom;
         public ObservableCollection<string> peers = new ObservableCollection<string>();
 
         public ChatController cc;
 
-        public MainWindow()
+        public MainWindow(string nickname, string adress)
         {
+            this.nickname = nickname;
+            this.address = adress;
             InitializeComponent();
-
-            // lancer le listener
-            // remplir liste de noeuds voisins
 
             populateChatrooms();
 

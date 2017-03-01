@@ -1,0 +1,26 @@
+﻿<Window x:Class="Projet.ConnexionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Projet"
+        mc:Ignorable="d"
+        Title="ConnexionWindow" Height="200" Width="300">
+    <Grid Margin="30, 30">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0" >Nickname:</Label>
+        <Label Grid.Row="1" Grid.Column="0" >IP adress:</Label>
+        <TextBox Grid.Row="0" Grid.Column="1" Name="textBoxNickname" Margin="20, 8"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Name="textBoxIP" Margin="20, 8" />
+        <Button Grid.Row="2" Grid.Column="1" Name="buttonSubmitTopicName" Content="OK" Click="buttonSubmitTopicName_Click" Margin="20, 0"/>
+    </Grid>
+</Window>

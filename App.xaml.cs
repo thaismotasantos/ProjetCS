@@ -13,5 +13,24 @@ namespace Projet
     /// </summary>
     public partial class App : Application
     {
+        private void ApplicationStart(object sender, StartupEventArgs e)
+    {
+        Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+        var connexionWindow = new ConnexionWindow();
+
+        if (connexionWindow.ShowDialog() == false)
+        {
+            var mainWindow = new MainWindow(connexionWindow.nickname, connexionWindow.address);
+            Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            Current.MainWindow = mainWindow;
+            mainWindow.Show();
+        }
+        else
+        {
+            MessageBox.Show("Unable to load data.", "Error", MessageBoxButton.OK);
+            Current.Shutdown(-1);
+        }
+    }
     }
 }

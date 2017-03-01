@@ -152,7 +152,6 @@ namespace Projet
                         Peer peer_dest = new Peer(receivedHello.addr_source, receivedHello.port_source);
                         helloSenders.Add(peer_dest, DateTime.Now);
                         sendHello(hello_r, peer_dest);
-                        helloSenders.Add(peer_dest, DateTime.Now);
                         // A TRAITER : Sauf si un noeuds fait un HELLO avec une liste de paire vide (isolé) auquel cas on le rajoute automatiquement
                         // si source contient que moi dans sa liste de noeuds, l'ajouter à ma liste de noeuds (même que ça dépasse 4)
                         // si aucun noeud voisin ou 1 seul et moi même
@@ -343,18 +342,20 @@ namespace Projet
         private void fillNeighbours(List<Peer> listeNoeudsVoisins)
         {
             // comparer pairs existants et reçus et ajouter aux existants les nouveaux jusqu'à 4
-            List<Peer> listeNouveauxNoeuds = listeNoeudsVoisins.Except(noeuds).ToList();
-            if(listeNouveauxNoeuds.Count > 0)
+            //List<Peer> listeNouveauxNoeuds = listeNoeudsVoisins.Except(noeuds).ToList();
+            List<Peer> listeNouveauxNoeuds = listeNoeudsVoisins.Where(x => !noeuds.Any(y => y.addr == x.addr)).ToList();
+            if (listeNouveauxNoeuds.Count > 0)
             {
                 foreach(Peer p in listeNouveauxNoeuds)
                 {
-                    if(noeuds.Count < 4 && p.addr != adresse)
-                    {
-                        noeuds.Add(p);
-                    }
-                    else
+                    if(noeuds.Count >= 4)
                     {
                         return;
+                    }
+
+                    if(p.addr != adresse)
+                    {
+                        noeuds.Add(p);
                     }
                 }
             }

@@ -40,9 +40,9 @@ namespace Projet.modele
             }
             set
             {
-                hash = value;
             }
         }
+        [DataMember]
         public string rootedby { get; set; } // ”mathieu,jean,jacques” - liste de nicknames des gens auxquels le message a été déjà delivré
 
         public bool addToRootedBy(string nickname)

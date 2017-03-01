@@ -17,16 +17,19 @@ namespace Projet
 {
     public partial class TopicNameForm : System.Windows.Window
     {
-        public TopicNameForm()
+        MainWindow win;
+
+        public TopicNameForm(MainWindow win)
         {
+            this.win = win;
             InitializeComponent();
         }
 
         private void buttonSubmitTopicName_Click(object sender, RoutedEventArgs e)
         {
             Chatroom newChatroom = new Chatroom(textBoxTopicName.Text);
-            textBoxTopicName.Text = null;
-            this.Hide();
+            win.chatrooms.Add(newChatroom);
+            this.Close();
         }
     }
 }

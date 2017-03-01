@@ -20,9 +20,9 @@ namespace Projet
 
     public partial class MainWindow : System.Windows.Window
     {
-        ObservableCollection<Chatroom> chatrooms = new ObservableCollection<Chatroom>();
-        ObservableCollection<Message> messagesOfSelectedChatroom;
-        List<string> peers = new List<string>();
+        public ObservableCollection<Chatroom> chatrooms = new ObservableCollection<Chatroom>();
+        public ObservableCollection<Message> messagesOfSelectedChatroom;
+        public ObservableCollection<string> peers = new ObservableCollection<string>();
 
         public MainWindow()
         {
@@ -129,7 +129,7 @@ namespace Projet
 
         private void buttonAddTopic_Click(object sender, RoutedEventArgs e)
         {
-            TopicNameForm tnf = new TopicNameForm();
+            TopicNameForm tnf = new TopicNameForm(this);
             tnf.Show();
         }
 

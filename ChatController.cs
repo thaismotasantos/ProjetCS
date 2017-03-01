@@ -23,7 +23,7 @@ namespace Projet
 
         private string adresse;
         private Int32 porte;
-        private string nickname;
+        public string nickname;
         private string adressePremierDestinataire;
         private Int32 portePremierDestinataire;
 
@@ -36,10 +36,10 @@ namespace Projet
 
         public ChatController()
         {
-            adresse = "10.154.127.235"; 
+            adresse = "10.154.126.249"; 
             porte = 2323;
             nickname = "thais";
-            adressePremierDestinataire = "10.154.126.249"; //10.154.127.244
+            adressePremierDestinataire = "10.154.127.235"; //10.154.127.244
             portePremierDestinataire = 2323;
 
             noeuds = new List<Peer>();
@@ -148,19 +148,16 @@ namespace Projet
                     List<Peer> listeNoeudsVoisins = receivedHello.pairs;
                     if (receivedHello.GetType() == typeof(Hello_A))
                     {
-                        Peer senderPeer = new Peer(receivedHello.addr_source, receivedHello.port_source);
-                        helloSenders.Add(senderPeer, DateTime.Now);
-
                         Hello_R hello_r = new Hello_R(adresse, porte, noeuds);
                         Peer peer_dest = new Peer(receivedHello.addr_source, receivedHello.port_source);
                         sendHello(hello_r, peer_dest);
-
+                        helloSenders.Add(peer_dest, DateTime.Now);
                         // A TRAITER : Sauf si un noeuds fait un HELLO avec une liste de paire vide (isolé) auquel cas on le rajoute automatiquement
                         // si source contient que moi dans sa liste de noeuds, l'ajouter à ma liste de noeuds (même que ça dépasse 4)
                         // si aucun noeud voisin ou 1 seul et moi même
                         if ((listeNoeudsVoisins.Count == 0 
                             || (listeNoeudsVoisins.Count == 1 && listeNoeudsVoisins.Where(p => (p.addr == adresse)).ToList().Count > 0))
-                            && !noeuds.Contains(senderPeer))
+                            && !noeuds.Contains(peer_dest))
                         {
                             noeuds.Add(peer_dest);
                         }
@@ -199,12 +196,12 @@ namespace Projet
         }
 
         // méthode appelée lors du clique de l'utilisateur sur bouton send
-        private void sendMessageFromUser()
+        public void sendMessageFromUser(Message msg)
         {
             // créer message et ajouter son nickname au rootedby du message
             // sendMessage(message);
-            Message message = new Message(nickname, "", "", nickname);
-            sentAndReceivedMessages.Add(message.hash);
+            sendMessage(msg);
+            sentAndReceivedMessages.Add(msg.hash);
         }
 
         private void sendMessage(Message message)
@@ -258,7 +255,7 @@ namespace Projet
             }
 
             // si nickname source n'est pas dans liste nicknames (participants), l'ajouter
-            if (participants.Find(p => p == message.nickname).ToList().Count == 0)
+            if (participants.Count == 0 || participants.Find(p => p == message.nickname).ToList().Count == 0)
             {
                 participants.Add(message.nickname);
             }

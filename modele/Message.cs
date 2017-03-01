@@ -38,6 +38,10 @@ namespace Projet.modele
                     .Append(type).Append(nickname).Append(msg).Append(timestamp).Append(destinataire);
                 return sha256_hash(sb.ToString());
             }
+            set
+            {
+                hash = value;
+            }
         }
         public string rootedby { get; set; } // ”mathieu,jean,jacques” - liste de nicknames des gens auxquels le message a été déjà delivré
 

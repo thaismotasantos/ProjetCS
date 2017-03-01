@@ -24,6 +24,8 @@ namespace Projet
         public ObservableCollection<Message> messagesOfSelectedChatroom;
         public ObservableCollection<string> peers = new ObservableCollection<string>();
 
+        public ChatController cc;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -39,7 +41,7 @@ namespace Projet
             listViewMessages.ItemsSource = messagesOfSelectedChatroom;
 
             listBoxParticipants.ItemsSource = peers;
-            ChatController cc = new ChatController();
+            cc = new ChatController();
         }
 
         private void populateChatrooms()
@@ -77,7 +79,11 @@ namespace Projet
 
         private void buttonSendMessage_Click(object sender, RoutedEventArgs e)
         {
-
+            string textMsg = textBoxChat.Text;
+            
+            Message msg = new Message(cc.nickname, textMsg, "", cc.nickname);
+            cc.sendMessageFromUser(msg);
+            messagesOfSelectedChatroom.Add(msg);
         }
 
         private void listBoxParticipants_MouseDoubleClick(object sender, MouseButtonEventArgs e)

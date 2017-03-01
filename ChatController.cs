@@ -150,6 +150,7 @@ namespace Projet
                     {
                         Hello_R hello_r = new Hello_R(adresse, porte, noeuds);
                         Peer peer_dest = new Peer(receivedHello.addr_source, receivedHello.port_source);
+                        helloSenders.Add(peer_dest, DateTime.Now);
                         sendHello(hello_r, peer_dest);
                         helloSenders.Add(peer_dest, DateTime.Now);
                         // A TRAITER : Sauf si un noeuds fait un HELLO avec une liste de paire vide (isolé) auquel cas on le rajoute automatiquement
@@ -169,12 +170,15 @@ namespace Projet
             }
             else if (type == ECommunicationType.MESSAGE)
             {
+                DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Message));
+                Message message = (Message)ser.ReadObject(stream);
+
                 // vérifier si message pas encore reçu
-                /*if(sentAndReceivedMessages.Where(m => m == ((Message)mc).hash).ToList().Count == 0)
+                if (sentAndReceivedMessages.Where(m => m == message.hash).ToList().Count == 0)
                 {
-                    sendMessage((Message)mc);
-                    sentAndReceivedMessages.Add(((Message)mc).hash);
-                }*/
+                    sendMessage(message);
+                    sentAndReceivedMessages.Add((message).hash);
+                }
             }
             else
             {

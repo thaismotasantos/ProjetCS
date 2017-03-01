@@ -36,10 +36,10 @@ namespace Projet
 
         public ChatController()
         {
-            adresse = "10.154.127.235";
+            adresse = "10.154.127.235"; 
             porte = 2323;
             nickname = "thais";
-            adressePremierDestinataire = "10.154.127.235";
+            adressePremierDestinataire = "10.154.126.249"; //10.154.127.244
             portePremierDestinataire = 2323;
 
             noeuds = new List<Peer>();
@@ -118,8 +118,6 @@ namespace Projet
 
         private void incomingMessage(string msg)
         {
-            
-
             var data = (JObject)JsonConvert.DeserializeObject(msg);
             Console.WriteLine(data["type"]);
             string type = data["type"].Value<string>();
@@ -150,7 +148,8 @@ namespace Projet
                     List<Peer> listeNoeudsVoisins = receivedHello.pairs;
                     if (receivedHello.GetType() == typeof(Hello_A))
                     {
-                        helloSenders.Add(new Peer(receivedHello.addr_source, receivedHello.port_source), DateTime.Now);
+                        Peer senderPeer = new Peer(receivedHello.addr_source, receivedHello.port_source);
+                        helloSenders.Add(senderPeer, DateTime.Now);
 
                         Hello_R hello_r = new Hello_R(adresse, porte, noeuds);
                         Peer peer_dest = new Peer(receivedHello.addr_source, receivedHello.port_source);
@@ -159,8 +158,9 @@ namespace Projet
                         // A TRAITER : Sauf si un noeuds fait un HELLO avec une liste de paire vide (isolé) auquel cas on le rajoute automatiquement
                         // si source contient que moi dans sa liste de noeuds, l'ajouter à ma liste de noeuds (même que ça dépasse 4)
                         // si aucun noeud voisin ou 1 seul et moi même
-                        if (listeNoeudsVoisins.Count == 0 
+                        if ((listeNoeudsVoisins.Count == 0 
                             || (listeNoeudsVoisins.Count == 1 && listeNoeudsVoisins.Where(p => (p.addr == adresse)).ToList().Count > 0))
+                            && !noeuds.Contains(senderPeer))
                         {
                             noeuds.Add(peer_dest);
                         }
@@ -170,7 +170,7 @@ namespace Projet
                     fillNeighbours(listeNoeudsVoisins);
                 }
             }
-            else if (msg.Contains(ECommunicationType.MESSAGE))
+            else if (type == ECommunicationType.MESSAGE)
             {
                 // vérifier si message pas encore reçu
                 /*if(sentAndReceivedMessages.Where(m => m == ((Message)mc).hash).ToList().Count == 0)
@@ -347,7 +347,7 @@ namespace Projet
             {
                 foreach(Peer p in listeNouveauxNoeuds)
                 {
-                    if(noeuds.Count < 4)
+                    if(noeuds.Count < 4 && p.addr != adresse)
                     {
                         noeuds.Add(p);
                     }

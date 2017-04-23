@@ -9,5 +9,6 @@
 //------------------------------------------------------------------------------
 
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("api/newtonsoft.json.dll")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("windows.networking.connectivity.dll")]
 
 

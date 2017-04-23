@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Projet"
         mc:Ignorable="d"
-        Title="ConnexionWindow" Height="200" Width="300">
+        Title="ConnexionWindow" Height="240" Width="300">
     <Grid Margin="30, 30">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5*"/>
@@ -14,13 +14,16 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="4*"/>
             <RowDefinition Height="4*"/>
-            <RowDefinition Height="2*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" >Nickname:</Label>
-        <Label Grid.Row="1" Grid.Column="0" >IP adress:</Label>
+        <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="0,0,0,21.667" Grid.RowSpan="2" Width="117" Content="IP address:" />
+        <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="0,0,0,21.667" Grid.RowSpan="2" Width="117" Content="Port:" />
         <TextBox Grid.Row="0" Grid.Column="1" Name="textBoxNickname" Margin="20, 8"/>
         <TextBox Grid.Row="1" Grid.Column="1" Name="textBoxIP" Margin="20, 8" />
-        <Button Grid.Row="2" Grid.Column="1" Name="buttonSubmitTopicName" Content="OK" Click="buttonSubmitTopicName_Click" Margin="20, 0"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Name="textBoxPort" Margin="20, 8" />
+        <Button Grid.Row="3" Grid.Column="1" Name="buttonSubmitTopicName" Content="OK" Click="buttonSubmitTopicName_Click" Margin="20, 0"/>
     </Grid>
 </Window>

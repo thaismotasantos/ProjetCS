@@ -8,16 +8,19 @@ using System.Threading.Tasks;
 namespace Projet.modele
 {
     [DataContract]
-    public class PingPong : CommunicationType
+    public class Ping : CommunicationType
     {
-        public PingPong(string addr_source, long timestamp): base(ECommunicationType.PINGPONG)
+        public Ping(string addr_source, Int32 port_source, long timestamp): base(ECommunicationType.PING)
         {
             this.addr_source = addr_source;
+            this.port_source = port_source;
             this.timestamp = timestamp;
         }
 
         [DataMember]
         public string addr_source { get; set; }
+        [DataMember]
+        public Int32 port_source { get; set; }
         [DataMember]
         public long timestamp { get; set; }
     }

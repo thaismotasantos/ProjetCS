@@ -21,14 +21,14 @@ namespace Projet
 
         public TopicNameForm(MainWindow win)
         {
-            this.win = win;
             InitializeComponent();
+            this.win = win;
         }
 
         private void buttonSubmitTopicName_Click(object sender, RoutedEventArgs e)
         {
             Chatroom newChatroom = new Chatroom(textBoxTopicName.Text);
-            win.chatrooms.Add(newChatroom);
+            win.changeChatroom(newChatroom);
             this.Close();
         }
     }

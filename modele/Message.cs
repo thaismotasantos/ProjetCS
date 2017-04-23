@@ -12,13 +12,13 @@ namespace Projet.modele
     public class Message : CommunicationType
     {
 
-        public Message(string nickname, string msg, string destinataire, string rootedby): base(ECommunicationType.MESSAGE)
+        public Message(string nickname, string msg, string destinataire/*, string rootedby*/): base(ECommunicationType.MESSAGE)
         {
             this.nickname = nickname;
             this.msg = msg;
             this.timestamp = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             this.destinataire = destinataire;
-            this.rootedby = rootedby;
+            this.rootedby = ""; // rootedby;
         }
 
         [DataMember]
@@ -47,7 +47,14 @@ namespace Projet.modele
 
         public bool addToRootedBy(string nickname)
         {
-            List<string> nicknames = rootedby.Split(',').ToList<string>();
+            List<string> nicknames;
+            if (!String.IsNullOrEmpty(rootedby))
+            {
+                nicknames = rootedby.Split(',').ToList<string>();
+            } else
+            {
+                nicknames = new List<string>();
+            }            
 
             if(!nicknames.Any())
             {

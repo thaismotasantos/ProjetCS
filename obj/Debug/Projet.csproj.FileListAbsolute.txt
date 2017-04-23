@@ -15,6 +15,8 @@ C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\Pro
 C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\Projet.csproj.GenerateResource.Cache
 C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\Projet.exe
 C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\Projet.pdb
-C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\Projet.csprojResolveAssemblyReference.cache
 C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\obj\Debug\Projet_Content.g.cs
 C:\Users\thais\Documents\Visual Studio 2015\Projects\Projet\Projet\bin\Debug\Newtonsoft.Json.dll
+C:\Users\thais\documents\visual studio 2015\Projects\Projet\Projet\obj\Debug\ConnexionWindow.g.cs
+C:\Users\thais\documents\visual studio 2015\Projects\Projet\Projet\obj\Debug\ConnexionWindow.baml
+C:\Users\thais\documents\visual studio 2015\Projects\Projet\Projet\obj\Debug\Projet.csprojResolveAssemblyReference.cache

@@ -20,7 +20,8 @@ namespace Projet
     public partial class ConnexionWindow : System.Windows.Window
     {
         public string nickname;
-        public string address;
+        public string addressFirstReceiver;
+        public string portFirstReceiver;
 
         public ConnexionWindow()
         {
@@ -30,8 +31,11 @@ namespace Projet
         private void buttonSubmitTopicName_Click(object sender, RoutedEventArgs e)
         {
             nickname = textBoxNickname.Text;
-            address = textBoxIP.Text;
+            addressFirstReceiver = textBoxIP.Text;
+            portFirstReceiver = textBoxPort.Text;
             this.Close();
         }
+
+        // TODO : faire validation des champs
     }
 }

@@ -12,7 +12,8 @@ namespace Projet.modele
         public const String HELLO_A = "HELLO_A";
         public const String HELLO_R = "HELLO_R";
         public const String MESSAGE = "MESSAGE";
-        public const String PINGPONG = "PING/PONG";
+        public const String PING = "PING";
+        public const String PONG = "PONG";
         public const String GOODBYE = "GOODBYE";
     }
 }

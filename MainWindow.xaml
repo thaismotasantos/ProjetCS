@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Projet"
         xmlns:modele="clr-namespace:Projet.modele" x:Class="Projet.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525" Closing="Window_Closing">
     <Window.Resources>
     </Window.Resources>
     <Grid x:Name="gridMain">

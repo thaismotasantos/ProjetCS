@@ -63,11 +63,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ConnexionWindow.xaml.cs">
+      <DependentUpon>ConnexionWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="modele\Hello_A.cs" />
     <Compile Include="modele\Hello_R.cs" />
     <Compile Include="TopicNameForm.xaml.cs">
       <DependentUpon>TopicNameForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="udp\UDPListener.cs" />
+    <Compile Include="udp\UDPSender.cs" />
+    <Page Include="ConnexionWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -76,7 +85,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ChatController.cs" />
+    <Compile Include="udp\ChatUDPController.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -132,6 +141,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="api\Newtonsoft.Json.dll" />
+    <Content Include="Windows.Networking.Connectivity.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

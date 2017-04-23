@@ -1,4 +1,5 @@
 ﻿using Projet.modele;
+using Projet.udp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,37 +18,46 @@ using System.Windows.Shapes;
 
 namespace Projet
 {
-
     public partial class MainWindow : System.Windows.Window
     {
         public string nickname;
-        public string address;
+        public string addressFirstReceiver;
+        public string portFirstReceiver;
+
         public ObservableCollection<Chatroom> chatrooms = new ObservableCollection<Chatroom>();
         public ObservableCollection<Message> messagesOfSelectedChatroom;
         public ObservableCollection<string> peers = new ObservableCollection<string>();
 
-        public ChatController cc;
+        public ChatUDPController chatUDPController;
 
-        public MainWindow(string nickname, string adress)
+        public MainWindow(string nickname, string addressFirstReceiver, string portFirstReceiver, ChatUDPController chatUDPController)
         {
-            this.nickname = nickname;
-            this.address = adress;
             InitializeComponent();
 
-            populateChatrooms();
+            this.nickname = nickname;
+            this.addressFirstReceiver = addressFirstReceiver;
+            this.portFirstReceiver = portFirstReceiver;
+
+            //populateChatrooms();
+            messagesOfSelectedChatroom = new ObservableCollection<Message>();
+
+            Chatroom c1 = new Chatroom("");
+            chatrooms.Add(c1);
+
+            //peers.Add(nickname);
 
             listBoxChatrooms.ItemsSource = chatrooms;
             listBoxChatrooms.SelectedItem = chatrooms[0];
-            messagesOfSelectedChatroom = chatrooms[0].messages;
+            /*messagesOfSelectedChatroom = chatrooms[0].messages;*/
             listViewMessages.ItemsSource = messagesOfSelectedChatroom;
 
             listBoxParticipants.ItemsSource = peers;
-            cc = new ChatController();
+            this.chatUDPController = chatUDPController; //new ChatUDPController();
         }
 
-        private void populateChatrooms()
+        /*private void populateChatrooms()
         {
-            Chatroom c1 = new Chatroom("Real world");
+            /*Chatroom c1 = new Chatroom("Real world");
             Chatroom c2 = new Chatroom("Hogwarts");
             Chatroom c3 = new Chatroom("Middle Earth");
 
@@ -55,17 +65,17 @@ namespace Projet
             chatrooms.Add(c2);
             chatrooms.Add(c3);
 
-            c1.messages.Add(new Message("thais", "Coucou tout le monde", "", ""));
-            c1.messages.Add(new Message("dragos", "Coucou toi", "", ""));
-            c1.messages.Add(new Message("aurore", "Hey", "", ""));
+            c1.messages.Add(new Message("thais", "Coucou tout le monde", "")); // , ""
+            c1.messages.Add(new Message("dragos", "Coucou toi", ""));
+            c1.messages.Add(new Message("aurore", "Hey", ""));
 
-            c2.messages.Add(new Message("harry", "Expecto patronum", "", ""));
-            c2.messages.Add(new Message("ron", "Wingardium Leviosa", "", ""));
-            c2.messages.Add(new Message("hermione", "Alohomora", "", ""));
+            c2.messages.Add(new Message("harry", "Expecto patronum", ""));
+            c2.messages.Add(new Message("ron", "Wingardium Leviosa", ""));
+            c2.messages.Add(new Message("hermione", "Alohomora", ""));
 
-            c3.messages.Add(new Message("frodo", "My precious", "", ""));
-            c3.messages.Add(new Message("sam", "No, Mister Frodo", "", ""));
-            c3.messages.Add(new Message("gandalf", "You shall not pass", "", ""));
+            c3.messages.Add(new Message("frodo", "My precious", ""));
+            c3.messages.Add(new Message("sam", "No, Mister Frodo", ""));
+            c3.messages.Add(new Message("gandalf", "You shall not pass", ""));
 
             peers.Add("thais");
             peers.Add("dragos");
@@ -75,16 +85,28 @@ namespace Projet
             peers.Add("hermione");
             peers.Add("frodo");
             peers.Add("sam");
-            peers.Add("gandalf");
-        }
+            peers.Add("gandalf");*
+        }*/
 
         private void buttonSendMessage_Click(object sender, RoutedEventArgs e)
         {
             string textMsg = textBoxChat.Text;
-            
-            Message msg = new Message(cc.nickname, textMsg, "", cc.nickname);
-            cc.sendMessageFromUser(msg);
-            messagesOfSelectedChatroom.Add(msg);
+
+            if(!String.IsNullOrEmpty(textMsg))
+            {
+                Chatroom selectedChatroom = (Chatroom)listBoxChatrooms.SelectedItem;
+
+                Message msg = new Message(chatUDPController.myNickname, textMsg, selectedChatroom.name/*, chatUDPController.myNickname*/);
+                chatUDPController.sendMessage(msg);
+                //messagesOfSelectedChatroom.Add(msg);
+
+                selectedChatroom.messages.Add(msg);
+
+                messagesOfSelectedChatroom.Clear();
+                selectedChatroom.messages.ToList().ForEach(m => messagesOfSelectedChatroom.Add(m));
+
+                this.textBoxChat.Text = "";
+            }
         }
 
         private void listBoxParticipants_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -117,8 +139,7 @@ namespace Projet
                 element = (UIElement)VisualTreeHelper.GetParent(element);
             }
         }
-
-
+        
         private void listBoxChatrooms_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var item = ItemsControl.ContainerFromElement(listBoxChatrooms, e.OriginalSource as DependencyObject) as ListBoxItem;
@@ -131,7 +152,12 @@ namespace Projet
         private void listBoxChatrooms_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Chatroom selectedChatroom = (Chatroom) listBoxChatrooms.SelectedItem;
-            listViewMessages.ItemsSource = selectedChatroom.messages;
+            messagesOfSelectedChatroom.Clear();
+            selectedChatroom.messages.ToList().ForEach(m => messagesOfSelectedChatroom.Add(m));
+            //messagesOfSelectedChatroom.Concat(selectedChatroom.messages);
+            //messagesOfSelectedChatroom = selectedChatroom.messages;
+            //listViewMessages.ItemsSource = selectedChatroom.messages;
+            //listViewMessages.ItemsSource = selectedChatroom.messages;
         }
 
         private void buttonAddTopic_Click(object sender, RoutedEventArgs e)
@@ -140,6 +166,54 @@ namespace Projet
             tnf.Show();
         }
 
+        public void addMessageToChatroom(Message message, string chatName)
+        {
+            Chatroom chatroom;
 
+            if (chatrooms.Any(c => c.name.Equals(chatName)))
+            {
+                chatroom = chatrooms.ToList().FindAll(c => c.name.Equals(chatName)).First();
+            }
+            else
+            {
+                chatroom = new Chatroom(chatName);
+                chatrooms.Add(chatroom);
+            }
+
+            listBoxChatrooms.SelectedItem = chatroom;
+
+            chatroom.messages.Add(message);
+            //messagesOfSelectedChatroom = chatroom.messages;
+            messagesOfSelectedChatroom.Clear();
+            chatroom.messages.ToList().ForEach(m => messagesOfSelectedChatroom.Add(m));
+            //messagesOfSelectedChatroom.Add( Concat(chatroom.messages);
+        }
+
+        public void addParticipant(string nickname)
+        {
+            peers.Add(nickname);
+        }
+
+        public void removeParticipant(string nickname)
+        {
+            peers.Remove(nickname);
+        }
+
+        public void changeChatroom(Chatroom chatroom)
+        {
+            if (!chatrooms.Any(c => c.name.Equals(chatroom.name)))
+            {
+                chatrooms.Add(chatroom);
+            }
+            listBoxChatrooms.SelectedItem = chatroom;
+            //messagesOfSelectedChatroom = chatroom.messages;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            chatUDPController.stop();
+            //envoyer message goodbye
+            chatUDPController.sendGoodbye();
+        }
     }
 }

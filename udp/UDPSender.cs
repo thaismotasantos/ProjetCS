@@ -34,10 +34,10 @@ namespace Projet.udp
             // envoie hello et attend liste de noeuds voisins. si toujours moins que 4 renvoie un autre hello à un des nouveaux noeuds.
             // si toujours moins que 4 attendre 10 sec
 
-            Hello_A hello = new Hello_A(myAddress, myPort, chatUDPController.myNodes);
+            Hello_A hello = new Hello_A(myAddress, myPort, chatUDPController.MyNodes);
 
             // convert into json
-            foreach (Peer p in chatUDPController.myNodes)
+            foreach (Peer p in chatUDPController.MyNodes)
             {
                 sendHello(hello, p);
                 //sendMessage(serialize(hello), p.addr, p.port);
@@ -119,10 +119,12 @@ namespace Projet.udp
             }*/
         }
 
-        public void sendPing(Ping ping)
+        public void sendPing(Ping ping, Peer peer)
         {
             string comm = serialize(ping);
-            chatUDPController.myNodes.ForEach(p => sendCommunication(comm, p.addr, p.port));
+            sendCommunication(comm, peer.addr, peer.port);
+            /*chatUDPController.MyNodes.ForEach(p => {  /*chatUDPController.sentPings.Add(p.addr + " " + p.port, false);* });
+            chatUDPController.ticktockPong();*/
         }
 
         public void sendPong(Pong pong, string addr_source, Int32 port_source)
@@ -134,7 +136,7 @@ namespace Projet.udp
         public void sendGoodbye(Goodbye goodbye)
         {
             string gb = serialize(goodbye);
-            chatUDPController.myNodes.ForEach(p => sendCommunication(gb, p.addr, p.port));
+            chatUDPController.MyNodes.ForEach(p => sendCommunication(gb, p.addr, p.port));
             /*foreach (Peer p in chatUDPController.myNodes)
             {
                 sendCommunication(gb, p.addr, p.port);
@@ -147,7 +149,7 @@ namespace Projet.udp
             //message.addToRootedBy(myNickname);
 
             string msg = serialize(message);
-            foreach (Peer p in chatUDPController.myNodes)
+            foreach (Peer p in chatUDPController.MyNodes)
             {
                 // A FAIRE : NE PAS ENVOYER A L'EXPEDITEUR S'IL FAIT PARTIE DE MA LISTE DE NOEUDS
                 //if(p.addr == message.a)

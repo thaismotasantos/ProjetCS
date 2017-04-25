@@ -30,9 +30,9 @@ namespace Projet.udp
             this.isListening = true;
             this.chatUDPController = chatUDPController;
 
-            ThreadStart threadDelegate = new ThreadStart(listen);
-            Thread thread = new Thread(threadDelegate);
-            thread.Start();
+            ThreadStart threadStartListener = new ThreadStart(listen);
+            Thread threadListener = new Thread(threadStartListener);
+            threadListener.Start();
         }
 
         private void listen()
@@ -91,7 +91,7 @@ namespace Projet.udp
                         //List<Peer> listeNoeudsVoisins = receivedHello.pairs;
                         /*if (receivedHello.GetType() == typeof(Hello_A))
                         {*/
-                        Hello_R hello_r = new Hello_R(myAddress, myPort, chatUDPController.myNodes);
+                        Hello_R hello_r = new Hello_R(myAddress, myPort, chatUDPController.MyNodes);
                         Peer peer_dest = new Peer(receivedHello.addr_source, receivedHello.port_source);
                         //chatUDPController.helloSenders.Add(peer_dest, DateTime.Now);
                         chatUDPController.receivedHelloAList.Add(peer_dest, DateTime.Now);
@@ -100,7 +100,7 @@ namespace Projet.udp
                         // A TRAITER : Sauf si un noeuds fait un HELLO avec une liste de paire vide (isolé) auquel cas on le rajoute automatiquement
                         // si source contient que moi dans sa liste de noeuds, l'ajouter à ma liste de noeuds (même que ça dépasse 4)
                         // si aucun noeud voisin ou 1 seul et moi même
-                        chatUDPController.addPeerToCurrentNeighbors(peer_dest, listeNoeudsVoisins.Count == 0 || (listeNoeudsVoisins.Count == 1 && listeNoeudsVoisins[0].addr == myAddress));
+                        chatUDPController.addPeerToCurrentNeighbors(peer_dest, listeNoeudsVoisins.Count == 0 || (listeNoeudsVoisins.Count == 1 && listeNoeudsVoisins[0].addr.Equals(myAddress) && listeNoeudsVoisins[0].port == myPort));
 
                         /*if ((listeNoeudsVoisins.Count == 0
                             || (listeNoeudsVoisins.Count == 1 && listeNoeudsVoisins[0].addr == myAddress)) /*listeNoeudsVoisins.Where(p => (p.addr == adresse)).ToList().Count > 0)*
@@ -154,7 +154,16 @@ namespace Projet.udp
             {
                 DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Pong));
                 Pong pong = (Pong)ser.ReadObject(stream);
+                //chatUDPController.receivedPongs.Add(pong);
+                if (chatUDPController.SentPings.ContainsKey(pong.addr_source + pong.port_source))
+                {
+                    chatUDPController.SentPings[pong.addr_source + pong.port_source] = true;
+                }
                 // TODO : ajouter réponse pong à ping correspondant
+                /*if (chatUDPController.dictPingPong.ContainsKey(pong.addr_source + pong.port_source))
+                {
+                    chatUDPController.dictPingPong.Remove(pong.addr_source + pong.port_source);
+                }*/
                 // chatUDPController.
             }
             else if (type == ECommunicationType.GOODBYE)
@@ -192,13 +201,12 @@ namespace Projet.udp
             else if(message.destinataire[0] == '@' && message.destinataire.Equals('@' + chatUDPController.myNickname))
             {
                 chatUDPController.addMessageOnScreen(message, '@' + message.nickname);
-                chatUDPController.addParticipant(message.nickname);
             } // envoyer message si destinataire different de moi
             else
             {
                 chatUDPController.sendMessage(message);
-                chatUDPController.addParticipant(message.nickname);
             }
+            chatUDPController.addParticipant(message.nickname);
         }
 
         /*private void fillNeighbours(List<Peer> listeNoeudsVoisins, string helloType)

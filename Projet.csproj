@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="modele\Hello_A.cs" />
     <Compile Include="modele\Hello_R.cs" />
+    <Compile Include="modele\Pong.cs" />
     <Compile Include="TopicNameForm.xaml.cs">
       <DependentUpon>TopicNameForm.xaml</DependentUpon>
     </Compile>
@@ -108,7 +109,7 @@
     <Compile Include="modele\Message.cs" />
     <Compile Include="modele\MessageListener.cs" />
     <Compile Include="modele\Peer.cs" />
-    <Compile Include="modele\PingPong.cs" />
+    <Compile Include="modele\Ping.cs" />
     <Compile Include="PrivateChatWindow.xaml.cs">
       <DependentUpon>PrivateChatWindow.xaml</DependentUpon>
     </Compile>

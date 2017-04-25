@@ -115,9 +115,9 @@ namespace Projet
             item = GetElementFromPoint(listBoxParticipants, e.GetPosition(listBoxParticipants));
             if (item != null)
             {
-                PrivateChatWindow pcw = new PrivateChatWindow(item.ToString());
-
-                pcw.Show();
+                changeChatroom(getChatroomByName('@' + item.ToString()));
+                /*PrivateChatWindow pcw = new PrivateChatWindow(item.ToString());
+                pcw.Show();*/
             }
         }
 
@@ -168,6 +168,29 @@ namespace Projet
 
         public void addMessageToChatroom(Message message, string chatName)
         {
+            Chatroom chatroom = getChatroomByName(chatName);
+
+            /*if (chatrooms.Any(c => c.name.Equals(chatName)))
+            {
+                chatroom = chatrooms.ToList().FindAll(c => c.name.Equals(chatName)).First();
+            }
+            else
+            {
+                chatroom = new Chatroom(chatName);
+                chatrooms.Add(chatroom);
+            }*/
+
+            listBoxChatrooms.SelectedItem = chatroom;
+
+            chatroom.messages.Add(message);
+            //messagesOfSelectedChatroom = chatroom.messages;
+            messagesOfSelectedChatroom.Clear();
+            chatroom.messages.ToList().ForEach(m => messagesOfSelectedChatroom.Add(m));
+            //messagesOfSelectedChatroom.Add( Concat(chatroom.messages);
+        }
+
+        private Chatroom getChatroomByName(string chatName)
+        {
             Chatroom chatroom;
 
             if (chatrooms.Any(c => c.name.Equals(chatName)))
@@ -180,13 +203,7 @@ namespace Projet
                 chatrooms.Add(chatroom);
             }
 
-            listBoxChatrooms.SelectedItem = chatroom;
-
-            chatroom.messages.Add(message);
-            //messagesOfSelectedChatroom = chatroom.messages;
-            messagesOfSelectedChatroom.Clear();
-            chatroom.messages.ToList().ForEach(m => messagesOfSelectedChatroom.Add(m));
-            //messagesOfSelectedChatroom.Add( Concat(chatroom.messages);
+            return chatroom;
         }
 
         public void addParticipant(string nickname)

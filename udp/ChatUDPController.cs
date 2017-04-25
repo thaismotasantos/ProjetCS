@@ -14,6 +14,7 @@ using System.Timers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 
 namespace Projet.udp
 {
@@ -21,7 +22,38 @@ namespace Projet.udp
     {
         public MainWindow mainWindow { get; set; }
 
-        public List<Peer> myNodes { get; set; } // max 4
+        private List<Peer> myNodes { get; set; } // max 4
+
+        public List<Peer> MyNodes
+        {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            get
+            {
+                return myNodes;
+            }
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            set
+            {
+                myNodes = value;
+            }
+        }
+
+        private Dictionary<string, bool> sentPings { get; set; } // dict de pings envoyés
+
+        public Dictionary<string, bool> SentPings
+        {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            get
+            {
+                return sentPings;
+            }
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            set
+            {
+                sentPings = value;
+            }
+        }
+
         public List<Chatroom> chatrooms { get; set; }
 
         private string myAddress;
@@ -39,14 +71,18 @@ namespace Projet.udp
         public List<string> sentAndReceivedMessages { get; set; } // liste de hash des messages
         public List<string> sentAndReceivedGoodbyes { get; set; } // liste de goodbyes envoyés et reçus
         
+        //public List<Pong> receivedPongs { get; set; } // pongs reçus
+
         public List<string> participants { get; set; }
 
         private System.Timers.Timer cleanHelloTimer;
+        private static Mutex mutex = new Mutex();
+        private bool running = true;
 
         public ChatUDPController(string nickname, string addressFirstReceiver, string portFirstReceiver)
         {
             this.myAddress = getMyIPAddress(); // 192.168.1.17 10.154.126.249 
-            this.myPort = 2324; //2323
+            this.myPort = 2323;
             this.myNickname = nickname; //"thais";
             this.addressFirstReceiver = addressFirstReceiver; //"192.168.1.17"; // 10.154.127.244 10.154.127.235
             this.portFirstReceiver = Int32.Parse(portFirstReceiver); //2323;
@@ -58,6 +94,8 @@ namespace Projet.udp
             receivedHelloRList = new Dictionary<Peer, DateTime>();
             sentAndReceivedMessages = new List<string>();
             sentAndReceivedGoodbyes = new List<string>();
+            sentPings = new Dictionary<string, bool>();
+            //receivedPongs = new List<Pong>();
             participants = new List<string>();
 
             myNodes.Add(new Peer(this.addressFirstReceiver, this.portFirstReceiver)); // 1 pair en dur
@@ -67,6 +105,11 @@ namespace Projet.udp
             this.udpSender = new UDPSender(this.myNickname, this.myAddress, this.myPort, this);
             // send first hello communications
             startup();
+            //sendPing();
+
+            ThreadStart threadStartTicktock = new ThreadStart(startClockToCheckReceivedPongs);
+            Thread threadTicktock = new Thread(threadStartTicktock);
+            threadTicktock.Start();
 
             // envoie hello et attend liste de noeuds voisins. si toujours moins que 4 renvoie un autre hello à un des nouveaux noeuds.
             // si toujours moins que 4 attendre 10 sec
@@ -107,9 +150,8 @@ namespace Projet.udp
             //helloSenders = helloSenders.Where(s => ((DateTime.Now - s.Value).TotalSeconds < 10)).ToDictionary(s => s.Key, s => s.Value);
             receivedHelloAList = receivedHelloAList.Where(s => ((DateTime.Now - s.Value).TotalSeconds < 10)).ToDictionary(s => s.Key, s => s.Value);
             receivedHelloRList = receivedHelloRList.Where(s => ((DateTime.Now - s.Value).TotalSeconds < 10)).ToDictionary(s => s.Key, s => s.Value);
-            startup();
+            //startup();
             // TODO : faire ping pairs liste noeuds voisins
-            sendPing();
         }
 
         public void sendHello(Hello hello, Peer peer)
@@ -126,7 +168,7 @@ namespace Projet.udp
             udpSender.sendMessage(message);
         }
 
-        public void sendPing()
+        public void sendPing(Peer peer)
         {
             Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             modele.Ping ping = new modele.Ping(myAddress, myPort, unixTimestamp);
@@ -134,7 +176,7 @@ namespace Projet.udp
             // TODO : créer dictionnaire pingpong (si un ping a sa réponse pong)
             // ajouter une nouvelle entrée dans le dict avec ping
 
-            udpSender.sendPing(ping);
+            udpSender.sendPing(ping, peer);
         }
 
         public void sendPong(string addr_source, Int32 port_source)
@@ -142,6 +184,99 @@ namespace Projet.udp
             Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             modele.Pong pong = new modele.Pong(myAddress, myPort, unixTimestamp);
             udpSender.sendPong(pong, addr_source, port_source);
+        }
+
+        private void startClockToCheckReceivedPongs()
+        {
+            while(running)
+            {
+                Thread.Sleep(10000);
+
+                mutex.WaitOne();
+
+                List<Peer> newList = new List<Peer>();
+                foreach (Peer p in MyNodes)
+                {
+                    newList.Add(p);
+
+                    if (sentPings.ContainsKey(p.addr + p.port))
+                    {
+                        if (!sentPings[p.addr + p.port])
+                        {
+                            newList.Remove(p);
+                        }
+                    }
+                }
+
+                MyNodes = newList;
+
+                sentPings = new Dictionary<string, bool>();
+
+                lock (MyNodes)
+                {
+                    List<Peer> pairsList = MyNodes;
+                    foreach (Peer p in pairsList)
+                    {
+                        if (pairsList.Count < 4)
+                        {
+                            startup();
+                        }
+
+                        sentPings.Add(p.addr + p.port, false);
+                        sendPing(p);
+                    }
+
+                }
+
+                mutex.ReleaseMutex();
+
+                /*MyNodes.ForEach(p => sendPing(p));
+                //ticktockPong();
+
+                Thread.Sleep(10000);
+
+                mutex.WaitOne();
+
+                //List<Peer> nodesToDelete = new List<Peer>();
+                List<Peer> newList = new List<Peer>();
+                foreach (Peer peer in MyNodes)
+                {
+                    Pong pong = receivedPongs.Find(p => p.addr_source.Equals(peer.addr) && p.port_source == peer.port);
+                    if (pong != null)
+                    {
+                        //nodesToDelete.Add(peer);
+                        newList.Add(peer);
+                    }
+                }
+
+                MyNodes = newList;
+
+                //nodesToDelete.ForEach(ntd => MyNodes.Remove(ntd));
+
+                // supprime tous les pings qui ont eu un pong
+                /*receivedPongs.ForEach(rp => sentPings.Remove(rp.addr_source + " " + rp.port_source));
+
+                // si à la fin il y en reste des pings, supprimer noeud voisin de myNodes
+                if (sentPings.Count > 0)
+                {
+                    foreach (KeyValuePair<string, bool> entry in sentPings)
+                    {
+                        string[] peerInfo = entry.Key.Split(' ');
+                        Peer peer = myNodes.Find(n => n.addr.Equals(peerInfo[0]) && n.port.ToString().Equals(peerInfo[1]));
+                        myNodes.Remove(peer);
+                        // do something with entry.Value or entry.Key
+                    }
+                    sentPings.Clear();
+                }*
+
+                receivedPongs.Clear();
+
+                if (MyNodes.Count < 4)
+                {
+                    startup();
+                }
+                //sendPing();*/
+            }            
         }
 
         public void sendGoodbye()
@@ -279,15 +414,20 @@ namespace Projet.udp
         {
             // liste myNodes contient moins que 4 peers ou doit ajouter peer
             // peer n'existe pas dans la liste myNodes
-            if ((this.myNodes.Count < 4 || mustAdd) && this.myNodes.FindAll(p => p.addr == peer.addr && p.port == peer.port).Count == 0)
+            if ((this.MyNodes.Count < 4 || mustAdd) && !this.MyNodes.Any(p => p.addr.Equals(peer.addr) && p.port == peer.port)
+                && !(peer.addr.Equals(myAddress) && peer.port == myPort))
             {
-                this.myNodes.Add(peer);
+                lock (this.MyNodes)
+                {
+                    this.MyNodes.Add(peer);
+                }
                 // ajouter peer dans liste mainwindow
             }
         }
 
         public void stop()
         {
+            running = false;
             this.udpListener.stopListening();
         }
 
